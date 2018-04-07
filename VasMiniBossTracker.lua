@@ -9,9 +9,10 @@ VasMiniBossTracker.healthMap = { ["Test"]= { ["name"]="Test", ["health"]=100 }, 
 
 -- Next we create a function that will initialize our addon
 function VasMiniBossTracker:Initialize()
-	 self.inCombat = IsUnitInCombat("player")
-	VasMiniBossTrackerIndicator:SetHidden(false)
-	 EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, self.OnPlayerCombatState)
+	self.inCombat = IsUnitInCombat("player")
+	VasMiniBossTracker.Teleported(1, "", "", "", 1, 1)
+	VasMiniBossTrackerIndicatorTestLabel:SetHidden(not VasMiniBossTracker.isDebug)
+	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, self.OnPlayerCombatState)
   -- ...but we don't have anything to initialize yet. We'll come back to this.
 end
  
@@ -32,9 +33,9 @@ function VasMiniBossTracker.OnPlayerCombatState(event, inCombat)
  
     -- ...and then announce the change.
     if inCombat then
-      d("Entering combat.")
+      logDebug("Entering combat.")
     else
-      d("Exiting combat.")
+      logDebug("Exiting combat.")
     end
  
   end
@@ -43,6 +44,20 @@ end
 function logDebug(message)
 	if VasMiniBossTracker.isDebug then
 		d(message)
+	end
+end
+
+function VasMiniBossTracker.Teleported(eventCode)
+	logDebug("Teleported into raid")
+	if IsPlayerInRaid() then
+		local raidID = GetCurrentParticipatingRaidId()
+		local raidName = GetRaidName(raidID)
+		logDebug("Raid is: "..raidName)
+		local isVAS = string.match(raidName, "Asylum")
+		VasMiniBossTrackerIndicator:SetHidden(not isVAS)
+	else
+		logDebug("Not VAS")
+		VasMiniBossTrackerIndicator:SetHidden(true)
 	end
 end
 
@@ -76,22 +91,33 @@ end
 -- Finally, we'll register our event handler function to be called when the proper event occurs.
 
 EVENT_MANAGER:RegisterForEvent(VasMiniBossTracker.name, EVENT_ADD_ON_LOADED, VasMiniBossTracker.OnAddOnLoaded)
-EVENT_MANAGER:RegisterForEvent(VasMiniBossTracker.name,  EVENT_RETICLE_TARGET_CHANGED, VasMiniBossTracker.OnTargetChanged)
-EVENT_MANAGER:RegisterForEvent(VasMiniBossTracker.name,  EVENT_POWER_UPDATE, VasMiniBossTracker.OnTargetChanged)
--- EVENT_MANAGER:RegisterForEvent(VasMiniBossTracker.name,  EVENT_TARGET_CHANGED, VasMiniBossTracker.OnTargetChanged)
+EVENT_MANAGER:RegisterForEvent(VasMiniBossTracker.name, EVENT_RETICLE_TARGET_CHANGED, VasMiniBossTracker.OnTargetChanged)
+EVENT_MANAGER:RegisterForEvent(VasMiniBossTracker.name, EVENT_POWER_UPDATE, VasMiniBossTracker.OnTargetChanged)
+EVENT_MANAGER:RegisterForEvent(VasMiniBossTracker.name, EVENT_RAID_PARTICIPATION_UPDATE, VasMiniBossTracker.Teleported)
 EVENT_MANAGER:RegisterForEvent(VasMiniBossTracker.name, EVENT_PLAYER_COMBAT_STATE, VasMiniBossTracker.OnPlayerCombatState)
+
 SLASH_COMMANDS["/track"] = function(unitName)
 	d("Adding '"..unitName.."'' to persistent tracker")
 	VasMiniBossTracker.healthMap["Test"]["name"] = unitName
 	VasMiniBossTracker.OnTargetChanged(1, "")
 end
 
+SLASH_COMMANDS["/vason"] = function(isDebug)
+	VasMiniBossTrackerIndicator:SetHidden(false)
+end
+
+SLASH_COMMANDS["/vasoff"] = function(isDebug)
+	VasMiniBossTrackerIndicator:SetHidden(true)
+end
+
 SLASH_COMMANDS["/vasdebug"] = function(isDebug)
 	if isDebug == "on" or isDebug == "true" then
 		VasMiniBossTracker.isDebug = true
+		VasMiniBossTrackerIndicatorTestLabel:SetHidden(not VasMiniBossTracker.isDebug)
 		d("Debug = TRUE")
 	else
 		VasMiniBossTracker.isDebug = false
+		VasMiniBossTrackerIndicatorTestLabel:SetHidden(not VasMiniBossTracker.isDebug)
 		d("Debug = FALSE")
 	end
 end

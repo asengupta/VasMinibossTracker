@@ -1,0 +1,6 @@
+## Title: VasMiniBossTracker
+## APIVersion: 100021
+## SavedVariables: VasMiniBossTrackerSavedVariables
+
+VasMiniBossTracker.lua
+VasMiniBossTracker.xml

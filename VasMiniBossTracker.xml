@@ -1,0 +1,23 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="VasMiniBossTrackerIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="200" y="25" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+ 
+      <Controls>
+        <Label name="$(parent)FelmsLabel" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Felms: 100%">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+        <Label name="$(parent)LlothisLabel" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Llothis: 100%">
+          <Anchor point="BOTTOM" relativeTo="$(parent)FelmsLabel" relativePoint="TOP" />
+        </Label>
+        <Label name="$(parent)TestLabel" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Test: 100%">
+          <Anchor point="BOTTOM" relativeTo="$(parent)LlothisLabel" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>
